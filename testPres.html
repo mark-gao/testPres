@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Example hosting on gh-pages</title>
+  <title>Introduction of a shiny app</title>
     
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -783,34 +783,95 @@ hljs.initHighlightingOnLoad();
   <div class="reveal">
   <div class="slides">
 
-<section data-state="section" data-transition="linear" data-transition-speed="default">
-<h1>Example hosting on gh-pages</h1><p>Brian Caffo<br/>7/22/2014</p>
+<section data-state="section" data-transition="default" data-transition-speed="default">
+<h1>Introduction of a shiny app</h1><p>Mark Gao<br/>April 25 2015</p>
 
 <div class="slideContent" >
+<p><small>
+Developing Data Products Course Project <br>
+Part II
+</small></p>
 
 </div>
 
 </section>
-<section data-transition="linear" data-transition-speed="default">
-<h3>Rpres on gh-pages</h3>
+<section data-transition="default" data-transition-speed="default">
+<h3>Interactively Search 1991 DAX stock Indices</h3>
 <div class="slideContent" >
+<p><small>
+This shiny app provides DAX daily stock index prices in 1991. Sliding the slider on the left side of User Interface to select from Day 1 to Day 365, the calendar date and the closing price index of that day will be shown on the right side of the User Interface. A plot of the whole year indices is provided, too. The green line on the plot is the date selected on the left.</p>
+
 <ul>
-<li>Simple demonstration of hosting content on
-gh-pages</li>
+<li>Dataset: MASS</li>
+<li>Data:EuStockMarkets
+</small></li>
 </ul>
 
 </div>
 
 </section>
-<section data-transition="linear" data-transition-speed="default">
-<h3>Rpres on gh-pages</h3>
+<section data-transition="default" data-transition-speed="default">
+<h3>ui.R Code</h3>
 <div class="slideContent" >
-<ul>
-<li>Create a slide deck</li>
-<li>Create a repo</li>
-<li>Create a branch called gh-pages</li>
-<li>Enjoy</li>
-</ul>
+<p><small></p>
+
+<pre><code>library(shiny)
+shinyUI(pageWithSidebar(
+  headerPanel(&quot;Welcome to Mark Gao Shiny site!&quot;),
+  # Sidebar with a slider input for day of the year
+  sidebarPanel(
+    h3(&quot;Daily Closing Prices of DAX Stock Indices, 1991&quot;),
+
+    sliderInput(&quot;obs&quot;, &quot;Day of the Year 1991:&quot;, min = 1, max = 365, value = 100),
+
+  # Show a plot of the stock
+  mainPanel(
+    h3(&quot;Day of the Year 1991:&quot;),
+    verbatimTextOutput(&quot;day&quot;),
+    h3(&quot;Price:&quot;),
+    verbatimTextOutput(&quot;price&quot;),
+    plotOutput(&quot;distPlot&quot;)
+  )
+))
+</code></pre>
+
+<p></small></p>
+
+</div>
+
+</section>
+<section data-transition="default" data-transition-speed="default">
+<h3>server.R code</h3>
+<div class="slideContent" >
+<p><small></p>
+
+<pre><code>library(shiny)
+library(MASS)
+data(&quot;EuStockMarkets&quot;)
+
+shinyServer(function(input, output) {
+
+  output$day &lt;- renderPrint(format(as.Date(input$obs - 1, origin = &quot;1991-01-01&quot;) , &quot;%B %d-%Y&quot;))
+  output$price &lt;- renderPrint(EuStockMarkets[input$obs, 1])
+  output$distPlot &lt;- renderPlot({
+
+      dax &lt;- EuStockMarkets[1:365, 1]
+      plot(dax, type=&quot;l&quot;, xlab=&quot;Day of the Year 1991&quot;, ylab= &quot;Stock Price&quot;)
+      abline(v = input$obs, col=&quot;green&quot;)
+  })
+})
+</code></pre>
+
+<p></small></p>
+
+</div>
+
+</section>
+<section data-transition="default" data-transition-speed="default">
+<h3>User interface</h3>
+<div class="slideContent" >
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-1"/> 
+<a href="https://markgao.shinyapps.io/shiny/">https://markgao.shinyapps.io/shiny/</a></p>
 
 </div>
 
@@ -866,7 +927,7 @@ function commandsForSlide(indexh) {
       rollingLinks: false,
       
       theme: 'simple', 
-      transition: 'linear',
+      transition: 'default',
       transitionSpeed: 'default',
       rtl: false,
       width: 960,
